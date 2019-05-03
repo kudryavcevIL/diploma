@@ -4,3 +4,5 @@
 /tsconfig.base.json
 /node_modules
 /artifacts
+/debug
+/Debug
