@@ -1,0 +1,14 @@
+{
+   "name": "Diploma",
+   "version": "0.0.1",
+   "repository": {
+      "type": "git",
+      "url": "git@github.com:kudryavcevIL/diploma.git"
+   },
+   "dependencies": {
+      "fs-extra": "^7.0.1"
+   },
+   "devDependencies": {
+      "eslint": "^5.13.0"
+   }
+}
