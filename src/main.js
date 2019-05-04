@@ -37,8 +37,12 @@ function start() {
         })
     });
 
+    const trans = simplex.transposed;
+
     result = {
-        matrix: simplex.get(),
+        matrix: simplex.getAllElements(),
+        size: simplex.size,
+        determinant: simplex.determinant,
         elements: elements,
         sumElement: sumElement
     }
