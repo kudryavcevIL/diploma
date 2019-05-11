@@ -22,7 +22,13 @@ function start() {
     const trans = simplex.transposed;
 
     const revers = simplex.revers;
-
+    
+    const norm = simplex.normProjectora({
+        0: [0, 0],
+        1: [0, 1],
+        2: [1, 0],
+        3: [1, 1]
+    });
     FileSystem.writeFile(config.pathToResult, revers.toString(), {uncoding: 'unf8'});
 
     console.log(config.text);
