@@ -19,35 +19,11 @@ function start() {
 
     const simplex = new Simplex(source);
 
-    let sumElement = 0;
-
-    simplex.each(element => {
-        sumElement += element;
-    });
-
-    const elements = [];
-
-    simplex.each((element, numberLine, numberColumn, line, column) => {
-        elements.push({
-            value: element,
-            numberLine: numberLine,
-            numberColumn: numberColumn,
-            line: line,
-            column: column
-        })
-    });
-
     const trans = simplex.transposed;
 
-    result = {
-        matrix: simplex.getAllElements(),
-        size: simplex.size,
-        determinant: simplex.determinant,
-        elements: elements,
-        sumElement: sumElement
-    }
+    const revers = simplex.revers;
 
-    FileSystem.writeFile(config.pathToResult, result, {uncoding: 'unf8'});
+    FileSystem.writeFile(config.pathToResult, revers.toString(), {uncoding: 'unf8'});
 
     console.log(config.text);
 }
