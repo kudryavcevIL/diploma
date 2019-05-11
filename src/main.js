@@ -1,15 +1,29 @@
 const FileSystem = require('./Utils/FileSystem');
+const Simplex = require('./Math/Simplex');
 
 function start() {
     const pathToConfig = process.argv[2];
     const config = JSON.parse(FileSystem.readFile(pathToConfig));
 
-    const result = {
-        Name: 'Ilya',
-        comment: 'I am good student'
-    };
+    const source = config.simplex.reduce((result, element, index) => {
+        const line = element.replace(/[\s]*/g, '').split(',');
 
-    FileSystem.writeFile(config.pathToResult, result, {uncoding: 'unf8'});
+        result[index] = [];
+
+        for (const value of line) {
+            result[index].push(+value);
+        }
+
+        return result;
+    }, {});
+
+    const simplex = new Simplex(source);
+
+    const trans = simplex.transposed;
+
+    const revers = simplex.revers;
+
+    FileSystem.writeFile(config.pathToResult, revers.toString(), {uncoding: 'unf8'});
 
     console.log(config.text);
 }
