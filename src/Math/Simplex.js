@@ -3,6 +3,10 @@ const Lagrange = require('./Lagrange');
 
 class Simplex extends Matrix {
 
+    /**
+     * 
+     * @param {Array} points 
+     */
     normProjectora(points) {
         if (!this.normProj) {
             this.cofLagrange = new Lagrange(this.revers);
@@ -12,6 +16,10 @@ class Simplex extends Matrix {
         return this.normProj;
     }
 
+    /**
+     * 
+     * @param {Array} points 
+     */
     getNormProjectora(points) {
         const norms = [];
 

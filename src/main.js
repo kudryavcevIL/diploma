@@ -18,10 +18,6 @@ function start() {
     }, {});
 
     const simplex = new Simplex(source);
-
-    const trans = simplex.transposed;
-
-    const revers = simplex.revers;
     
     const norm = simplex.normProjectora({
         0: [0, 0],
@@ -29,7 +25,8 @@ function start() {
         2: [1, 0],
         3: [1, 1]
     });
-    FileSystem.writeFile(config.pathToResult, revers.toString(), {uncoding: 'unf8'});
+
+    FileSystem.writeFile(config.pathToResult, norm.toString(), {uncoding: 'unf8'});
 
     console.log(config.text);
 }
