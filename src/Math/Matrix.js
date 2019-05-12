@@ -3,6 +3,9 @@ class Matrix {
         this.value = cfg || {};
     }
 
+    /**
+     * 
+     */
     toString() {
         let result = '';
 
@@ -256,6 +259,10 @@ class Matrix {
         return new Matrix(result);
     }
 
+    /**
+     * 
+     * @param {Matrix} matrix 
+     */
     static getRevers(matrix) {
         if (matrix.determinant !== 0) {
             const result = new Matrix;
