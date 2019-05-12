@@ -19,7 +19,7 @@ class Simplex extends Matrix {
             let result = 0;
 
             for (let iteration = 0; iteration < this.size; iteration++) {
-                result += this.cofLagrange.getValue(iteration, points[point]); 
+                result += Math.abs(this.cofLagrange.getValue(iteration, points[point])); 
             }
 
             norms.push(result);
