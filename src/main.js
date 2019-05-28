@@ -1,7 +1,7 @@
 const FileSystem = require('./Utils/FileSystem');
 const Simplex = require('./Math/Simplex');
 
-function start() {
+async function start() {
     const pathToConfig = process.argv[2];
     const config = JSON.parse(FileSystem.readFile(pathToConfig));
 
@@ -18,19 +18,11 @@ function start() {
     }, {});
 
     const simplex = new Simplex(source);
-    
-    const norm = simplex.normProjectora({
-        0: [0, 0],
-        1: [0, 1],
-        2: [1, 0],
-        3: [1, 1]
-    });
+    const norm = await simplex.normProjectora();
 
-    FileSystem.writeFile(config.pathToResult, norm.toString(), {uncoding: 'unf8'});
-
-    console.log(config.text);
+    FileSystem.writeFile(config.pathToResult, `Норма: ${norm};\n\nСимплекс:\n${simplex.toString()}`, {uncoding: 'unf8'});
 }
 
-start();
-
-return;
+start().then(function() {
+    console.log('Я всё!!!')
+});

@@ -10,10 +10,18 @@ class Matrix {
         let result = '';
 
         for (const line in this.value) {
-            result += this.getLine(line).toString() + '\n';
+            result += this.getLine(line).join(',  ') + '\n';
         }
 
         return result;
+    }
+
+    get gradient() {
+        if (!this.grad) {
+            this.grad = Matrix.getRevers(this);
+        }
+
+        return this.grad;
     }
 
     get revers() {
@@ -64,7 +72,7 @@ class Matrix {
         }
 
         if (!this.minorMatrix.hasElement(numberLine, numberColumn)) {
-            this.minorMatrix.add(numberLine, numberColumn, Matrix.getMinor(numberLine, numberColumn, this));
+            this.minorMatrix.set(numberLine, numberColumn, Matrix.getMinor(numberLine, numberColumn, this));
         }
 
         return this.minorMatrix.getElement(numberLine, numberColumn);
@@ -76,7 +84,7 @@ class Matrix {
      * @param {Number} numberColumn 
      * @param {Number} element 
      */
-    add(numberLine, numberColumn, element) {
+    set(numberLine, numberColumn, element) {
         if (!this.value[numberLine]) {
             this.value[numberLine] = [];
         }
@@ -137,7 +145,7 @@ class Matrix {
      * 
      * @param {Function} callback 
      */
-    each(callback) {
+    forEach(callback) {
         for (const numberLine in this.value) {
             this.getLine(numberLine).forEach((element, numberColumn, line) => {
                 callback(element, +numberLine, numberColumn, line, this.getColumn(numberColumn));
@@ -145,6 +153,14 @@ class Matrix {
         }
     }
 
+
+    static getGradient(matrix) {
+        const result = point instanceof Matrix ? new Matrix : [];
+
+        point.forEach((value) => {
+            
+        });
+    }
 
     /**
      * 
@@ -183,9 +199,9 @@ class Matrix {
     static getMinor(numberLine, numberColumn, matrix) {
         const croppedMatrix = new Matrix();
 
-        matrix.each((element, line, column) => {
+        matrix.forEach((element, line, column) => {
             if (line !== numberLine && column !== numberColumn) {
-                croppedMatrix.add(
+                croppedMatrix.set(
                     line < numberLine ? line : line - 1,
                     column < numberColumn ? column : column - 1,
                     element
@@ -224,7 +240,7 @@ class Matrix {
         
                 firstColumn.forEach((element, index) => {
                     if (index !== 0) {
-                        const divider = element / firstElement * -1;
+                        const divider = firstElement === 0 ? 0 : element / firstElement * -1;
                         const mainLine = Matrix.multiplyLine(divider, firstLine);
                         const [ , ...newLine] = Matrix.addLines(mainLine, matrix.getLine(index));
         
@@ -248,7 +264,7 @@ class Matrix {
 
         const result = {};
 
-        matrix.each((element, numberLine, numberColumn) => {
+        matrix.forEach((element, numberLine, numberColumn) => {
             if (!result.hasOwnProperty(numberColumn)) {
                 result[numberColumn] = [];
             }
@@ -267,10 +283,10 @@ class Matrix {
         if (matrix.determinant !== 0) {
             const result = new Matrix;
             
-            matrix.transposed.each((element, numberLine, numberColumn) => {
+            matrix.transposed.forEach((element, numberLine, numberColumn) => {
                 const algebraicCoefficient = Math.pow(-1, numberLine + numberColumn);
                 const algebraicAddition = (algebraicCoefficient * matrix.transposed.minor(numberLine, numberColumn));
-                result.add(numberLine, numberColumn, (1 / matrix.determinant) * algebraicAddition);
+                result.set(numberLine, numberColumn, (1 / matrix.determinant) * algebraicAddition);
             });
 
             return result;
