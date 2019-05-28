@@ -10,10 +10,7 @@ class GradientMethod {
 
     async maximization(func, epcelent, numberSegment, sizeVector) {
         const vectorsPoints = SphericalVector.getVectorByRadians(numberSegment, sizeVector);
-        const arrayPromises = []
-
-        const vect = new SphericalVector([0]);
-
+        const arrayPromises = [];
 
         for (let i = vectorsPoints.length - 1; i > -1; i--) {
             arrayPromises.push(this.findLocalMax(func, vectorsPoints[i], epcelent));
