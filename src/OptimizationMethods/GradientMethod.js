@@ -1,4 +1,3 @@
-const Matrix = require('./../Math/Matrix');
 const SphericalVector = require('./../Math/SphericalVector');
 const Operation = require('./../Math/Operation');
 
@@ -71,26 +70,85 @@ class GradientMethod {
         }
     }
 
+    nextVector(point, gradients, delta) {
+        const result = [];
+
+        for (let i = point.radians.length - 1; i > -1; i--) {
+            result[i] = this.nextPointForMaximization(point[i], gradients[i], delta) ;
+        }
+
+        return new SphericalVector(result);
+    }
+
+    nextPointForMaximization(value, gradient, delta) {
+        return value + Operation.multiply(delta, gradient);
+    }
+
+    
+    nextPointForMinization(value, gradient, delta) {
+        return value - Operation.multiply(delta, gradient);
+    }
+
+    nextSimplex(simplex, gradients, delta) {
+        const result = {};
+
+        for (const line in gradients) {
+            result[line] = [];
+
+            for (let i = gradients[line].length - 1; i > -1; i--) {
+                result[line][i] = this.nextPointForMinization(simplex.radians[line].radians[i], gradients[line][i], delta);
+            }
+        }
+
+        return new simplex.__proto__.constructor(result);
+    }
+
+    async minization(startSimplex, epcelent) {
+        let simplex = startSimplex;
+        let previousGradient;
+        let previousValueFunc;
+        let currentGradient;
+        let nextSimplex;
+        let nextValueFunc;
+        let currentValueFunc;
+        let delta;
+
+        while(true) {
+            previousValueFunc = currentValueFunc;
+            currentValueFunc =  await simplex.normProjectora();
+            previousGradient = currentGradient || 0;
+            currentGradient = await simplex.gradientByNorm();
+            delta = 0.1;
+
+            if (this.stopIterations(previousGradient, currentGradient, previousValueFunc, currentValueFunc)) {
+                return {
+                    simplex: simplex,
+                    norm: currentValueFunc
+                };
+            }
+
+            while(true) {
+                nextSimplex = this.nextSimplex(simplex, currentGradient, delta);
+                nextValueFunc = await nextSimplex.normProjectora();
+
+                if (currentValueFunc > nextValueFunc) {
+                    currentValueFunc = nextValueFunc;
+                    simplex = nextSimplex;
+                    delta = delta - epcelent;
+                } else {
+                    break;
+                }
+            }
+        }
+    }
+
+
     stopIterations(previousGradient, currentGradient, previousValueFunc, currentValueFunc) {
         const lengthCurrentGradient = Operation.absVector(currentGradient);
         const lengthPreviousGradient = Operation.absVector(previousGradient);
 
         return lengthCurrentGradient === 0 || 
         (lengthPreviousGradient === lengthCurrentGradient && previousValueFunc === currentValueFunc);
-    }
-
-    nextVector(point, gradients, delta) {
-        const result = new SphericalVector([]);
-
-        for (let i = point.radians.length - 1; i > -1; i--) {
-            result.radians[i] = this.nextPointForMaximization(point.radians[i], gradients[i], delta) ;
-        }
-
-        return result;
-    }
-
-    nextPointForMaximization(value, gradient, delta) {
-        return value + Operation.multiply(delta, gradient);
     }
 }
 

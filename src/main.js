@@ -1,26 +1,20 @@
 const FileSystem = require('./Utils/FileSystem');
 const Simplex = require('./Math/Simplex');
+const GradientMethod = require('./OptimizationMethods/GradientMethod');
 
 async function start() {
     const pathToConfig = process.argv[2];
     const config = JSON.parse(FileSystem.readFile(pathToConfig));
 
-    const source = config.simplex.reduce((result, element, index) => {
-        const line = element.replace(/[\s]*/g, '').split(',');
+    const simplex = new Simplex(config.simplex);
+    const gradMethod = new GradientMethod({});
 
-        result[index] = [];
+    const minSimplex = await gradMethod.minization(simplex, 0.001);
 
-        for (const value of line) {
-            result[index].push(+value);
-        }
-
-        return result;
-    }, {});
-
-    const simplex = new Simplex(source);
-    const norm = await simplex.normProjectora();
-
-    FileSystem.writeFile(config.pathToResult, `Норма: ${norm};\n\nСимплекс:\n${simplex.toString()}`, {uncoding: 'unf8'});
+    FileSystem.writeFile(config.pathToResult, {
+        norm: minSimplex.norm,
+        simplex: minSimplex.simplex.toString()
+    });
 }
 
 start().then(function() {

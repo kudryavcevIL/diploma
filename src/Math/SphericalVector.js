@@ -1,4 +1,6 @@
 const Operation = require('./Operation');
+
+
 const derivativeAccuracy = 0.001;
 const firstRange = [0, Operation.round(2 * Math.PI)];
 const otherRange = [-Operation.round(Math.PI/2), Operation.round(Math.PI/2)];
@@ -7,7 +9,16 @@ const lengthOtherRanges = Operation.round(Math.PI);
  
 class SphericalVector {
     constructor(value) {
-        this.radians = [...value];
+        this.radians = [];
+
+        for (let i = value.length - 1; i > -1; i--) {
+            if (i === 0) {
+                this.radians[i] = SphericalVector.noramalizeRadian(value[i], firstRange);
+                continue;
+            }
+
+            this.radians[i] = SphericalVector.noramalizeRadian(value[i], otherRange);
+        }
     }
 
     get coordinates() {
@@ -16,6 +27,18 @@ class SphericalVector {
         }
 
         return this.coordinatesValue;
+    }
+
+    static noramalizeRadian(value, range) {
+        if (value < range[0]) {
+            return range[0];
+        }
+
+        if (value > range[1]) {
+            return range[1];
+        }
+
+        return value;
     }
 
     gradient(func) {
