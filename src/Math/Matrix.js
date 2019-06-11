@@ -153,15 +153,6 @@ class Matrix {
         }
     }
 
-
-    static getGradient(matrix) {
-        const result = point instanceof Matrix ? new Matrix : [];
-
-        point.forEach((value) => {
-            
-        });
-    }
-
     /**
      * 
      * @param {Number} number 
@@ -234,15 +225,17 @@ class Matrix {
             default: {
                 const nextMatrix = {};
 
-                const firstColumn = matrix.getColumn(0);
-                const firstLine = matrix.getLine(0);
-                const firstElement = matrix.getElement(0, 0);
+                
+                const normMatrix = matrix;// new Matrix(Matrix.normalizeMatrix(matrix.value));
+                const firstColumn = normMatrix.getColumn(0);
+                const firstLine = normMatrix.getLine(0);
+                const firstElement = normMatrix.getElement(0, 0);
         
                 firstColumn.forEach((element, index) => {
                     if (index !== 0) {
                         const divider = firstElement === 0 ? 0 : element / firstElement * -1;
                         const mainLine = Matrix.multiplyLine(divider, firstLine);
-                        const [ , ...newLine] = Matrix.addLines(mainLine, matrix.getLine(index));
+                        const [ , ...newLine] = Matrix.addLines(mainLine, normMatrix.getLine(index));
         
                         nextMatrix[index - 1] = newLine;
                     }
@@ -301,6 +294,33 @@ class Matrix {
      */
     static isMatrix(matrix) {
         return matrix instanceof Matrix;
+    }
+
+    static normalizeMatrix(matrix) {
+        const result = {...{}, ...matrix};
+        let needProcess = true;
+
+        while(needProcess) {
+            needProcess = false;
+
+            processLine: for (const line in result) {
+                if (result[line][line] === 0) {
+                    for (let i = result[line].length - 1; i > -1; i--) {
+                        if (result[i][line] !== 0 && result[line][i] !== 0) {
+                            const findedLine = [...[], ...result[i]];
+
+                            result[i] = [...[], ...result[line]];
+                            result[line] = findedLine;
+                            needProcess = true;
+
+                            break processLine;
+                        }
+                    }
+                }
+            }
+        }
+
+        return result;
     }
 }
 

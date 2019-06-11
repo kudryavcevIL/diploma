@@ -10,15 +10,20 @@ class Simplex extends Matrix {
 
   /**
    * 
-   * @param {*} cfg 
+   * @param {*} points 
    */
-    constructor(cfg) {
+    constructor(points, spherical) {
         const matrix = {};
         const radians = {};
 
-        for (const line in cfg) {
-            radians[line] = cfg[line] instanceof SphericalVector ? cfg[line] : new SphericalVector(cfg[line]);
-            matrix[line] = [...[], ...radians[line].coordinates];
+        for (const line in points) {
+            if (spherical) {
+                radians[line] = points[line] instanceof SphericalVector ? points[line] : new SphericalVector(points[line]);
+                matrix[line] = [...[], ...radians[line].coordinates];
+            } else {
+                matrix[line] = [...[], ...points[line]];
+            }
+
             matrix[line].push(1);
         }
 
@@ -38,7 +43,7 @@ class Simplex extends Matrix {
             derivativeAccuracy: 0.001
         });
 
-        const norm = await maxMethod.maximization(this.projector.bind(this), 0.01, 30, this.size - 2);
+        const norm = await maxMethod.maximization(this.projector.bind(this), 0.01, 35, this.size - 2);
 
         return norm.value;
     }
@@ -77,14 +82,38 @@ class Simplex extends Matrix {
                 leftPoints[line] = leftVector;
                 rightPoints[line] = rightVector;
 
-                const leftSimplex = new Simplex(leftPoints);
-                const rightSimplex = new Simplex(rightPoints);
+                const leftSimplex = new Simplex(leftPoints, true);
+                const rightSimplex = new Simplex(rightPoints, true);
 
                 result[line][i] = Operation.derivative(await leftSimplex.normProjectora(), await rightSimplex.normProjectora(), derivativeAccuracy);
             }
         }
 
         return result;  
+    }
+
+    static getCorrectSimplex(dimension) {
+        const result = {};
+        result[dimension] = [];
+        const shiftCorrect = Simplex.getShiftToCorrectSimplex(dimension);
+
+        for (let i = dimension - 1; i > -1; i--) {
+            result[dimension].push(shiftCorrect);
+        }
+
+        for (let i = dimension - 1; i > -1; i--) {
+            result[i] = [];
+
+            for (let j = dimension - 1; j > -1; j--) {
+                result[i][j] = j === i ? 1 : 0;
+            }
+        }
+
+        return result;
+    }
+
+    static getShiftToCorrectSimplex(dimension) {
+        return Operation.round((1 - Math.sqrt(dimension + 1))/dimension);
     }
 
 }

@@ -1,3 +1,4 @@
+const pMap = require('p-map');
 const SphericalVector = require('./../Math/SphericalVector');
 const Operation = require('./../Math/Operation');
 
@@ -9,26 +10,28 @@ class GradientMethod {
 
     async maximization(func, epcelent, numberSegment, sizeVector) {
         const vectorsPoints = SphericalVector.getVectorByRadians(numberSegment, sizeVector);
-        const arrayPromises = [];
 
-        for (let i = vectorsPoints.length - 1; i > -1; i--) {
-            arrayPromises.push(this.findLocalMax(func, vectorsPoints[i], epcelent));
+        const result = await pMap(vectorsPoints, async (vectorsPoints) => {
+            try {
+                return await this.findLocalMax(func, vectorsPoints, epcelent);
+            } catch(error) {
+                throw new Error(error);
+            }
+        }, {concurrency: 1000})
+
+
+        const max = {
+            value: 0
+        };
+
+        for (let i = result.length - 1; i > -1; i--) {
+            if (result[i].value > max.value) {
+                max.value = result[i].value;
+                max.point = result[i].point;
+            }
         }
 
-        return Promise.all(arrayPromises).then((result) => {
-            const max = {
-                value: 0
-            };
-
-            for (let i = result.length - 1; i > -1; i--) {
-                if (result[i].value > max.value) {
-                    max.value = result[i].value;
-                    max.point = result[i].point;
-                }
-            }
-
-            return max;
-        });
+        return max;
     }
 
     async findLocalMax(func, startPoint, epcelent) {
@@ -100,7 +103,7 @@ class GradientMethod {
             }
         }
 
-        return new simplex.__proto__.constructor(result);
+        return new simplex.__proto__.constructor(result, true);
     }
 
     async minization(startSimplex, epcelent) {

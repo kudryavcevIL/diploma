@@ -8,7 +8,8 @@
    },
    "dependencies": {
       "fs-extra": "^7.0.1",
-      "jshint": "^2.10.2"
+      "jshint": "^2.10.2",
+      "p-map": "^2.1.0"
    },
    "devDependencies": {
       "eslint": "^5.13.0"
