@@ -4,7 +4,7 @@ class Matrix {
     }
 
     /**
-     * 
+     * Преобразует матрицу в строку.
      */
     toString() {
         let result = '';
@@ -16,14 +16,9 @@ class Matrix {
         return result;
     }
 
-    get gradient() {
-        if (!this.grad) {
-            this.grad = Matrix.getRevers(this);
-        }
-
-        return this.grad;
-    }
-
+    /**
+     * Возвращает обратную матрицу
+     */
     get revers() {
         if (!this.rev) {
             this.rev = Matrix.getRevers(this);
@@ -33,7 +28,7 @@ class Matrix {
     }
 
     /**
-     * 
+     * Возвращает определитель матрицы
      */
     get determinant() {
         if (!this.det) {
@@ -44,7 +39,7 @@ class Matrix {
     }
 
     /**
-     * 
+     * Возврашает транспонированную матрицу
      */
     get transposed() {
         if (!this.trans) {
@@ -55,16 +50,16 @@ class Matrix {
     }
 
     /**
-     * 
+     * Возврашает размер матрицы
      */
     get size() {
         return this.getLine(0).length || 0;
     }
 
     /**
-     * 
-     * @param {Number} numberLine 
-     * @param {Number} numberColumn 
+     * Считатет минор матрицы
+     * @param {Number} numberLine - номер строки
+     * @param {Number} numberColumn - номер столбца
      */
     minor(numberLine, numberColumn) {
         if (!this.minorMatrix) {
@@ -79,10 +74,10 @@ class Matrix {
     }
 
     /**
-     * 
-     * @param {Number} numberLine 
-     * @param {Number} numberColumn 
-     * @param {Number} element 
+     * Устанавливает значение елемента матрицы
+     * @param {Number} numberLine - номер строки
+     * @param {Number} numberColumn - номер столбца
+     * @param {Number} element - елемент
      */
     set(numberLine, numberColumn, element) {
         if (!this.value[numberLine]) {
@@ -95,32 +90,32 @@ class Matrix {
     }
 
     /**
-     * 
+     * Возврашет все элементы.
      */
     getAllElements() {
         return this.value;    
     }
 
     /**
-     * 
-     * @param {Number} numberLine 
-     * @param {Number} numberColumn 
+     * Вовращает элемент.
+     * @param {Number} numberLine - номер строки
+     * @param {Number} numberColumn - номер столбца
      */
     getElement(numberLine, numberColumn) {
         return this.hasElement(numberLine, numberColumn) ? this.value[numberLine][numberColumn] : undefined;
     }
 
     /**
-     * 
-     * @param {Number} numberLine 
+     * Вовращает строку.
+     * @param {Number} numberLine - номер строки
      */
     getLine(numberLine) {
         return this.value[numberLine]|| [];
     }
 
     /**
-     * 
-     * @param {Number} numberColumn 
+     * Вовращает столбец.
+     * @param {Number} numberColumn - номер столбца
      */
     getColumn(numberColumn) {
         const column = [];
@@ -133,17 +128,17 @@ class Matrix {
     }
 
     /**
-     * 
-     * @param {Number} numberLine 
-     * @param {Number} numberColumn 
+     * Проверяет есть ли элемент
+     * @param {Number} numberLine - номер строки
+     * @param {Number} numberColumn - номер столбца
      */
     hasElement(numberLine, numberColumn) {
         return !!(this.value[numberLine] && this.value[numberLine][numberColumn] !== undefined);
     }
 
     /**
-     * 
-     * @param {Function} callback 
+     * Перебирает все элементы вызывая для каждого функцию обработчик
+     * @param {Function} callback - обработчик
      */
     forEach(callback) {
         for (const numberLine in this.value) {
@@ -154,7 +149,7 @@ class Matrix {
     }
 
     /**
-     * 
+     * Умножает строку на число.
      * @param {Number} number 
      * @param {Arrary} line
      */
@@ -169,7 +164,7 @@ class Matrix {
     }
 
     /**
-     * 
+     * Складывает сроки
      * @param {Array} firstLine 
      * @param {Array} secondLine 
      */
@@ -182,7 +177,7 @@ class Matrix {
     }
 
     /**
-     * 
+     * Считает миноры мантрицы
      * @param {Number} numberLine 
      * @param {Number} numberColumn 
      * @param {Matrix} matrix 
@@ -204,7 +199,7 @@ class Matrix {
     }
 
     /**
-     * 
+     * Считает определитель мантрицы
      * @param {Matrix} matrix 
      */
     static getDeterminant(matrix) {
@@ -247,7 +242,7 @@ class Matrix {
     }
 
     /**
-     * 
+     * Транспонирует матрицу
      * @param {Matrix} matrix 
      */
     static getTransposed(matrix) {
@@ -269,7 +264,7 @@ class Matrix {
     }
 
     /**
-     * 
+     * Считатет обратную матрицу
      * @param {Matrix} matrix 
      */
     static getRevers(matrix) {
@@ -289,13 +284,17 @@ class Matrix {
     }
 
     /**
-     * 
+     * Проверяет, что это матрица.
      * @param {*} matrix 
      */
     static isMatrix(matrix) {
         return matrix instanceof Matrix;
     }
 
+    /**
+     * Нормирует матрицу, чтобы по главной диагонали не было нулей.
+     * @param {Object} matrix 
+     */
     static normalizeMatrix(matrix) {
         const result = {...{}, ...matrix};
         let needProcess = true;

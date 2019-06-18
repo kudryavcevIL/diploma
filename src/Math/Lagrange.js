@@ -1,16 +1,20 @@
+/**
+ * Класс описывающий многочлены Лагранжа
+ */
 class Lagrange {
+
     /**
-     * 
-     * @param {Matrix} coefficients 
+     * Конструктор класс. 
+     * @param {Matrix} coefficients - коэффиценты для многочленов
      */
     constructor(coefficients) {
         this.value = coefficients.transposed;
     }
 
     /**
-     * 
-     * @param {Number} iteration 
-     * @param {Array} vector 
+     * Возвращает значения для многочлена.
+     * @param {Number} iteration - номер многочлена Лагражка.
+     * @param {Array} vector - точка в которой надо вычислить значение.
      */
     getValue(iteration, vector) {
         return this.value.getLine(iteration).reduce((result, element, index) => {

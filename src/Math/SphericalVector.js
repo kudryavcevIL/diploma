@@ -1,13 +1,21 @@
 const Operation = require('./Operation');
 
-
 const derivativeAccuracy = 0.001;
 const firstRange = [0, Operation.round(2 * Math.PI)];
 const otherRange = [-Operation.round(Math.PI/2), Operation.round(Math.PI/2)];
 const lengthFirstRange = Operation.round(2 * Math.PI);
 const lengthOtherRanges = Operation.round(Math.PI);
+const breakRangeHistory = {};
  
+/**
+ * Класс описывает точку с сферической системе координат. 
+ */
 class SphericalVector {
+
+    /**
+     * Конструктор класса.
+     * @param {Array} value - значения углов.
+     */
     constructor(value) {
         this.radians = [];
 
@@ -21,6 +29,9 @@ class SphericalVector {
         }
     }
 
+    /**
+     * Возврашает координаты точки в декартовой системе.
+     */
     get coordinates() {
         if (!this.coordinatesValue) {
             this.coordinatesValue = this._calculateСoordinates();
@@ -29,6 +40,11 @@ class SphericalVector {
         return this.coordinatesValue;
     }
 
+    /**
+     * Нормирует значение углов.
+     * @param {Number} value - значение угла.
+     * @param {Array} range - разршонный диапозон.
+     */
     static noramalizeRadian(value, range) {
         if (value < range[0]) {
             return range[0];
@@ -41,6 +57,10 @@ class SphericalVector {
         return value;
     }
 
+    /**
+     * Считает градиент.
+     * @param {Function} func - функция дял который считаем градиент.
+     */
     gradient(func) {
         const result = [];
         const original = this.radians;
@@ -58,6 +78,9 @@ class SphericalVector {
         return result;
     }
 
+    /**
+     * Переводит в декартову систему координат.
+     */
     _calculateСoordinates() {
         const result = [];
 
@@ -74,12 +97,16 @@ class SphericalVector {
     }
 
     /**
-     * 
-     * @param {Number} numberSigments 
-     * @param {Number} numberRadians 
+     * Делит шар на сектора.
+     * @param {Number} numberSigments - количество секторов.
+     * @param {Number} numberRadians - количество радиан.
      */
     static getVectorByRadians(numberSigments, numberRadians) {
-        const result = [];
+        if (breakRangeHistory[numberSigments] && breakRangeHistory[numberSigments][numberRadians]) {
+            return  breakRangeHistory[numberSigments][numberRadians];
+        }
+
+        const result = new Set();
 
         const stepsForFirstRange = Operation.round(lengthFirstRange / numberSigments);
         const stepsForOtherRanges = Operation.round(lengthOtherRanges / numberSigments);
@@ -89,19 +116,29 @@ class SphericalVector {
 
         for (let i = pointsFirstRange.length - 1; i > -1; i--) {
             if (numberRadians === 1) {
-                result.push(new SphericalVector([pointsFirstRange[i]]));
+                result.add(new SphericalVector([pointsFirstRange[i]]));
             } else {
                 SphericalVector.levelDown(numberRadians - 2, [pointsFirstRange[i]], pointsOtherRange, result);
             }
         }
 
+        breakRangeHistory[numberSigments] = breakRangeHistory[numberSigments] || {};
+        breakRangeHistory[numberSigments][numberRadians] = result;
+
         return result;
     }
 
+    /**
+     * 
+     * @param {Number} level
+     * @param {Array} root
+     * @param {Array} nodes
+     * @param {Array} result
+     */
     static levelDown(level, root, nodes, result) {
         for (let i = nodes.length - 1; i > -1; i--) {
             if (level === 0) {
-                result.push(new SphericalVector([...root, nodes[i]]));
+                result.add(new SphericalVector([...root, nodes[i]]));
             } else {
                 SphericalVector.levelDown(level - 1, [...root, nodes[i]], nodes, result);
             }
@@ -109,9 +146,9 @@ class SphericalVector {
     }
 
     /**
-     * 
-     * @param {Number} step 
-     * @param {Array} range
+     * Разбивает диапозон на отрезки.
+     * @param {Number} step - длина отрезка
+     * @param {Array} range - диапозон
      */
     static breakRange(step, range, numberStep) {
         const result = [range[0]];

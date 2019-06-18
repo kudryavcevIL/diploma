@@ -6,11 +6,15 @@ const SphericalVector = require('./SphericalVector');
 
 const derivativeAccuracy = 0.001;
 
+/**
+ * Класс описывающий симплекс
+ */
 class Simplex extends Matrix {
 
   /**
-   * 
-   * @param {*} points 
+   * Конструктор класса 
+   * @param {Object} points - набор вершин образующих симплекс
+   * @param {Boolean} spherical - точки придествлены в сферической координатах.
    */
     constructor(points, spherical) {
         const matrix = {};
@@ -34,23 +38,17 @@ class Simplex extends Matrix {
     }
 
     /**
-     * 
-     * 
+     * Считает норму проектора симплекса.
      */
     async normProjectora() {
-        const maxMethod = new GradientMethod({
-            direction: '+',
-            derivativeAccuracy: 0.001
-        });
-
-        const norm = await maxMethod.maximization(this.projector.bind(this), 0.01, 35, this.size - 2);
+        const norm = await GradientMethod.maximization(this.projector.bind(this), 0.01, 40, this.size - 2);
 
         return norm.value;
     }
 
     /**
-     * 
-     * @param {Array} point 
+     * Считате норму для одного узла интреполяции.
+     * @param {Array} point - узел интреполяции
      */
     projector(point) {
         let result = 0;
@@ -62,6 +60,9 @@ class Simplex extends Matrix {
         return result;
     }
 
+    /**
+     * Составляет градиент по функции normProjectora
+     */
     async gradientByNorm() {
         const result = {};
 
@@ -92,6 +93,10 @@ class Simplex extends Matrix {
         return result;  
     }
 
+    /**
+     * Строит правильный симплекс
+     * @param {Number} dimension - размерность пространства.
+     */
     static getCorrectSimplex(dimension) {
         const result = {};
         result[dimension] = [];
@@ -112,6 +117,10 @@ class Simplex extends Matrix {
         return result;
     }
 
+    /**
+     * Определяет необходимый коэффициент сдвига для нулевой вершины, чтобы получить правильный симплекс. 
+     * @param {Number} dimension - размерность пространства.
+     */
     static getShiftToCorrectSimplex(dimension) {
         return Operation.round((1 - Math.sqrt(dimension + 1))/dimension);
     }

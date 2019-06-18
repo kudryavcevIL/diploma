@@ -1,18 +1,38 @@
 const precision = 1000;
 
 class Operation {
+
+    /**
+     * Округляет значение.
+     * @param {Number} number 
+     */
     static round(number) {
         return Math.round(number * precision) / precision;
     }
 
+    /**
+     * Умножение чисел
+     * @param {Number} multiplicand 
+     * @param {Number} multiplier 
+     */
     static multiply(multiplicand, multiplier) {
         return Operation.round(Operation.round(multiplicand) * Operation.round(multiplier));
     }
 
+    /**
+     * Частная производная
+     * @param {Number} left 
+     * @param {Number} right 
+     * @param {Number} derivativeAccuracy 
+     */
     static derivative(left, right, derivativeAccuracy) {
         return Operation.round((left - right)/(2 * derivativeAccuracy));
     }
 
+    /**
+     * Считает длину вектора.
+     * @param {Array || Object} vector 
+     */
     static absVector(vector) {
         let result = 0;
 
@@ -31,6 +51,11 @@ class Operation {
         return Operation.round(Math.sqrt(result));
     }
 
+    /**
+     * Считает расстояние между точками.
+     * @param {Array} firstPoint 
+     * @param {Array} secondPoint 
+     */
     static getDistanceBetweenPoints(firstPoint, secondPoint) {
         let result = 0;
 
@@ -41,6 +66,10 @@ class Operation {
         return Operation.round(Math.sqrt(result));
     }
 
+    /**
+     * Находит центр масс.
+     * @param {Object} points 
+     */
     static getCenterOfMass(points) {
         const result = [];
         const dimension = points['0'].length
@@ -58,6 +87,10 @@ class Operation {
         return result;
     }
 
+    /**
+     * Производит сдвиг точек, чтобы центр тяжести оказался в начале координат.
+     * @param {Object} points 
+     */
     static shiftPointsToCenter(points) {
         const centerMass = Operation.getCenterOfMass(points);
         const dimension = points['0'].length;
@@ -74,6 +107,10 @@ class Operation {
         return result;
     }
 
+    /**
+     * Нормирует расстояние точек, чтобы расстоние до начало координат было равно единице.
+     * @param {Object} points 
+     */
     static normalizePoints(points) {
         const dimension = points['0'].length;
         const result = {};

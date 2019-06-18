@@ -1,13 +1,13 @@
 const fs = require('fs-extra');
 
 /**
- * 
+ * Класс для работы с файловой системой.
  */
 class FileSystem {
 
     /**
-     * 
-     * @param {String} path 
+     * Читает файл.
+     * @param {String} path - путь до файла
      */
     static readFile(path) {
         try {
@@ -18,9 +18,9 @@ class FileSystem {
     }
 
     /**
-     * 
-     * @param {Sting} path 
-     * @param {String | Object} content 
+     * Записывает файл
+     * @param {Sting} path - путь до файла
+     * @param {String | Object} content - контент
      */
     static writeFile(path, content) {
         let text = content;
